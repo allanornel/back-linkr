@@ -11,7 +11,7 @@ CREATE TABLE "users" (
 CREATE TABLE "posts" (
 	"id" serial NOT NULL PRIMARY KEY,
 	"url" TEXT NOT NULL,
-	"description" TEXT NOT NULL,
+	"description" TEXT,
     "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
 	"userId" int NOT NULL REFERENCES users(id)
 );
