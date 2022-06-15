@@ -27,7 +27,10 @@ async function getHashtags() {
     LIMIT 10;`);
 }
 
-export const hashtagRepository = {
+
+const hashtagRepository = {
 	insertHashtag,
 	getHashtags,
 };
+export default hashtagRepository;
+
