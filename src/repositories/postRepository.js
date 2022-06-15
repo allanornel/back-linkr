@@ -1,6 +1,19 @@
-import db from '../config/db.js';
+import db from "./../config/db.js";
 
-export async function getPosts(user) {
+async function searchUser(userId) {
+    return db.query(`
+        SELECT * FROM users WHERE id=$1
+    `, [userId]);
+}
+
+async function insertPost(url, description, userId) {
+    return db.query(`
+        INSERT INTO posts (url, description, "userId")
+        VALUES ($1, $2, $3); 
+        `, [url, description, userId]); 
+}
+
+async function getPosts(user) {
     return (
         db.query(
             `
@@ -22,3 +35,10 @@ export async function getPosts(user) {
     )
 }
 
+const postRepository = {
+    searchUser,
+    insertPost,
+    getPosts
+}
+
+export default postRepository;

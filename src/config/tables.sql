@@ -1,8 +1,8 @@
 CREATE TABLE "users" (
 	"id" serial NOT NULL PRIMARY KEY,
 	"email" TEXT NOT NULL UNIQUE,
-	"password" TEXT NOT NULL UNIQUE,
-	"picture" TEXT NOT NULL UNIQUE,
+	"password" TEXT NOT NULL,
+	"picture" TEXT NOT NULL,
 	"username" TEXT NOT NULL UNIQUE
 );
 
@@ -11,7 +11,7 @@ CREATE TABLE "users" (
 CREATE TABLE "posts" (
 	"id" serial NOT NULL PRIMARY KEY,
 	"url" TEXT NOT NULL,
-	"description" TEXT NOT NULL,
+	"description" TEXT,
     "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
 	"userId" int NOT NULL REFERENCES users(id)
 );
