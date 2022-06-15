@@ -20,10 +20,15 @@ async function searchUser(userId) {
   `, [userId]);
 }
 
+async function findByUser(email) {
+  return db.query(`SELECT * FROM users WHERE email = $1`, [email])
+}
+
 const userRepository = {
   checkSignUp,
   insertUser,
-  searchUser
+  searchUser,
+  findByUser
 };
 
 export default userRepository;

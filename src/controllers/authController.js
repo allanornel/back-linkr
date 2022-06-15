@@ -27,7 +27,7 @@ export async function Signin(req, res) {
   const { email, password } = req.body
   try {
 
-    const findEmailUsername = await usersRepository.checkSignUp(email, email)
+    const findEmailUsername = await usersRepository.findByUser(email)
 
     if (!findEmailUsername.rowCount) {
       return res.status(401).json({ error: 'Email não cadastrado!' })
