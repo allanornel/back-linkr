@@ -41,12 +41,12 @@ export async function Signin(req, res) {
     const data = {
       id: findEmailUsername.rows[0].id,
       username: findEmailUsername.rows[0].username,
-      picture: findEmailUsername.rows[0].picture
     }
 
     const token = jwt.sign(data, process.env.JWT_TOKEN)
 
-    res.status(200).json(token)
+      
+      res.status(200).json({token, picture: findEmailUsername.rows[0].picture})
 
   } catch (error) {
     res.sendStatus(500)
