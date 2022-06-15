@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import jwt from 'jsonwebtoken'
 import usersRepository from "../repositories/usersRepository.js";
 
 export async function signUp(req, res) {
@@ -19,5 +20,29 @@ export async function signUp(req, res) {
   } catch (error) {
     console.log(error);
     res.sendStatus(500);
+  }
+}
+
+export async function Signin(req, res) {
+  const { email, password } = req.body
+  try {
+
+    const findEmailUsername = await usersRepository.checkSignUp(email, email)
+
+    if (!findEmailUsername.rowCount) {
+      return res.status(401).json({ error: 'Email não cadastrado!' })
+    }
+
+
+    if(!(await bcrypt.compare(password, findEmailUsername.rows[0].password))) {
+      return res.status(401).json({ error: 'Senha incorreta' })
+    }
+
+    const token = jwt.sign({ id: findEmailUsername.rows[0].id }, process.env.JWT_TOKEN)
+
+    res.status(200).json(token)
+
+  } catch (error) {
+    res.sendStatus(500)
   }
 }
