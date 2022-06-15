@@ -38,3 +38,11 @@ CREATE TABLE "likes" (
 	"postId" int NOT NULL REFERENCES posts(id),
 	"userId" int NOT NULL REFERENCES users(id)
 );
+
+
+
+CREATE TABLE "followers" (
+	"id" serial NOT NULL PRIMARY KEY,
+	"userId" int NOT NULL REFERENCES users(id),
+	"followerId" int NOT NULL REFERENCES users(id)
+);
