@@ -1,8 +1,11 @@
 import { Router } from "express";
-import { getTopHashtags } from "../controllers/hashtagController.js";
+import {
+  getTopHashtags,
+  getHashtagByName,
+} from "../controllers/hashtagController.js";
 const hashtagRouter = Router();
 
 hashtagRouter.get("/hashtags", getTopHashtags);
-hashtagRouter.get("/hashtags/:id");
+hashtagRouter.get("/hashtags/:hashtag", getHashtagByName);
 
 export default hashtagRouter;
