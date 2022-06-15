@@ -14,9 +14,16 @@ async function insertUser(username, email, passwordHash, picture) {
   );
 }
 
+async function searchUser(userId) {
+  return db.query(`
+      SELECT * FROM users WHERE id=$1
+  `, [userId]);
+}
+
 const userRepository = {
   checkSignUp,
   insertUser,
+  searchUser
 };
 
 export default userRepository;

@@ -1,11 +1,5 @@
 import db from "./../config/db.js";
 
-async function searchUser(userId) {
-    return db.query(`
-        SELECT * FROM users WHERE id=$1
-    `, [userId]);
-}
-
 async function insertPost(url, description, userId) {
     return db.query(`
         INSERT INTO posts (url, description, "userId")
@@ -36,7 +30,6 @@ async function getPosts(user) {
 }
 
 const postRepository = {
-    searchUser,
     insertPost,
     getPosts
 }
