@@ -17,7 +17,7 @@ export async function createPost(req, res) {
 }
 
 export async function getTimeline(req, res) {
-    const { user } = req.locals;
+    const { user } = JSON.parse(JSON.stringify(res.locals));
 
     try {
         const { rows } = await postRepository.getPosts(user);

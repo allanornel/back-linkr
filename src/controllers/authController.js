@@ -38,7 +38,13 @@ export async function Signin(req, res) {
       return res.status(401).json({ error: 'Senha incorreta' })
     }
 
-    const token = jwt.sign({ id: findEmailUsername.rows[0].id }, process.env.JWT_TOKEN)
+    const data = {
+      id: findEmailUsername.rows[0].id,
+      username: findEmailUsername.rows[0].username,
+      picture: findEmailUsername.rows[0].picture
+    }
+
+    const token = jwt.sign(data, process.env.JWT_TOKEN)
 
     res.status(200).json(token)
 
