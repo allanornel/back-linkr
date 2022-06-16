@@ -7,11 +7,33 @@ async function insertPost(url, description, userId) {
         `, [url, description, userId]); 
 }
 
-async function getPosts(user) {
+async function getPosts() {
     return (
         db.query(
             `
             SELECT p."id", p."url", p."description", 
+            h."name" AS "hashtag",
+            u."username", u."picture" AS "image",
+            COALESCE(COUNT(l."id"), 0) AS "likesTotal"  
+            FROM posts p
+            JOIN users u ON u."id" = p."userId"
+            LEFT JOIN likes l ON l."userId" = p."userId"
+            LEFT JOIN "postsHashtags" ph ON ph."idPost" = p."id"
+            LEFT JOIN hashtags h ON h."id" = ph."id"
+            GROUP BY p."id", p."url", p."description", h."name",
+            u."username", u."picture"
+            ORDER BY p."createdAt" DESC
+            LIMIT 20
+            `
+        )
+    )
+}
+
+async function getPostsFromUser(id) {
+    return (
+        db.query(
+            `
+            SELECT p."id", p."url", p."description",
             h."name" AS "hashtag",
             COALESCE(COUNT(l."id"), 0) AS "likesTotal"  
             FROM posts p
@@ -23,14 +45,15 @@ async function getPosts(user) {
             GROUP BY p."id", p."url", p."description", h."name"
             ORDER BY p."createdAt" DESC
             LIMIT 20
-            `, [user.id]
+            `, [id]
         )
     )
 }
 
 const postRepository = {
     insertPost,
-    getPosts
+    getPosts,
+    getPostsFromUser
 }
 
 export default postRepository;
