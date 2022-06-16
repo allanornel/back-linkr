@@ -1,3 +1,5 @@
+import urlMetadata from 'url-metadata';
+
 import userRepository from "./../repositories/usersRepository.js";
 import postRepository from "./../repositories/postRepository.js";
 
@@ -22,6 +24,14 @@ export async function getTimeline(req, res) {
 
     try {
         const { rows } = await postRepository.getPosts(user);
+
+        const posts = await Promise.all(rows.map(async (post) => {
+            const { title, image, description } = await urlMetadata(post.url);
+            
+            post.title = title;
+            post.image = image;
+            post.urlDescription = description;
+        }));
 
         res.status(200).send(rows);
         

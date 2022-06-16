@@ -13,7 +13,7 @@ CREATE TABLE "posts" (
 	"url" TEXT NOT NULL,
 	"description" TEXT,
     "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-	"userId" int NOT NULL REFERENCES users(id)
+	"userId" int NOT NULL REFERENCES users(id),
 );
 
 
