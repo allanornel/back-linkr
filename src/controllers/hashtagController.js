@@ -12,11 +12,11 @@ export async function getTopHashtags(req, res) {
 }
 
 export async function getHashtagByName(req, res) {
-  const { name } = req.params;
+  const { hashtag } = req.params;
   try {
-    const checkHashtag = await hashtagRepository.checkHashtagByName(name);
+    const checkHashtag = await hashtagRepository.checkHashtagByName(hashtag);
     if (checkHashtag.rowCount === 0) return res.sendStatus(404);
-    const posts = await hashtagRepository.getHashtagByName(name);
+    const posts = await hashtagRepository.getHashtagByName(hashtag);
     res.send(posts.rows);
   } catch (error) {
     console.log(error);

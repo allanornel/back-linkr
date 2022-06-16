@@ -31,7 +31,7 @@ async function getHashtagByName(hashtag) {
   return db.query(
     `SELECT p.* FROM hashtags h 
     JOIN "postsHashtags" ph ON ph."idHashtag"=h.id
-    JOIN posts p ON ph."idPost" = p.id; 
+    JOIN posts p ON ph."idPost" = p.id 
     WHERE h.name = $1;`,
     [hashtag]
   );
