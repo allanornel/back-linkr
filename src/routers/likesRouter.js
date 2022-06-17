@@ -1,13 +1,13 @@
 import { Router } from 'express';
 
 import { validateToken } from './../middlewares/authMiddleware.js';
-import { likePost } from './../controllers/likesController.js';
+import { likePost, dislikePost } from './../controllers/likesController.js';
 
 const likesRouter = Router();
 
 likesRouter.use(validateToken);
 
 likesRouter.post('/like', likePost);
-likesRouter.delete('/dislike');
+likesRouter.delete('/dislike', dislikePost);
 
 export default likesRouter;
