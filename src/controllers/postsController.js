@@ -20,21 +20,42 @@ export async function createPost(req, res) {
 }
 
 export async function getTimeline(req, res) {
-    const { user } = JSON.parse(JSON.stringify(res.locals));
+    //const { user } = JSON.parse(JSON.stringify(res.locals));
 
     try {
-        const { rows } = await postRepository.getPosts(user);
+        const { rows } = await postRepository.getPosts();
 
-        const posts = await Promise.all(rows.map(async (post) => {
+        await Promise.all(rows.map(async (post) => {
             const { title, image, description } = await urlMetadata(post.url);
             
             post.title = title;
-            post.image = image;
+            post.postImage = image;
             post.urlDescription = description;
         }));
 
         res.status(200).send(rows);
         
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
+export async function getUserPosts(req, res) {
+    const { id } = req.params;
+    
+    try {
+        const { rows } = await postRepository.getPostsFromUser(id);
+
+        await Promise.all(rows.map(async (post) => {
+            const { title, image, description } = await urlMetadata(post.url);
+            
+            post.title = title;
+            post.postImage = image;
+            post.urlDescription = description;
+        }));
+
+        res.status(200).send(rows);
+
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
