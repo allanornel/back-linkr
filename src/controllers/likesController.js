@@ -15,12 +15,12 @@ export async function likeOrDislikePost(req, res){
         const likeResult = await likeRepository.searchLike(user.id, postId);
         if (likeResult.rowCount > 0) {
             await likeRepository.deleteLike(user.id, postId);
+            res.status(200).send(false);
         }
         if (likeResult.rowCount === 0) {
             await likeRepository.insertLike(user.id, postId);
+            res.status(200).send(true);
         }
-
-        res.sendStatus(200);
     } catch (error) {
         console.log(error);
         res.sendStatus(500);
