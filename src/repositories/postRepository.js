@@ -50,10 +50,17 @@ async function getPostsFromUser(id) {
     )
 }
 
+async function findPost(id) {
+    return await db.query(`
+        SELECT * FROM posts WHERE id=$1
+    `, [id]);
+}
+
 const postRepository = {
     insertPost,
     getPosts,
-    getPostsFromUser
+    getPostsFromUser,
+    findPost
 }
 
 export default postRepository;
