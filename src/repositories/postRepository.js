@@ -56,11 +56,16 @@ async function findPost(id) {
     `, [id]);
 }
 
+async function deletePost(id) {
+    return await db.query(`DELETE FROM posts WHERE id = $1`, [id])
+}
+
 const postRepository = {
     insertPost,
     getPosts,
     getPostsFromUser,
-    findPost
+    findPost,
+    deletePost
 }
 
 export default postRepository;
