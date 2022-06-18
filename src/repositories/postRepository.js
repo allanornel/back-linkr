@@ -1,16 +1,18 @@
 import db from "./../config/db.js";
 
 async function insertPost(url, description, userId) {
-    return db.query(`
+  return db.query(
+    `
         INSERT INTO posts (url, description, "userId")
         VALUES ($1, $2, $3); 
-        `, [url, description, userId]); 
+        `,
+    [url, description, userId]
+  );
 }
 
 async function getPosts() {
-    return (
-        db.query(
-            `
+  return db.query(
+    `
             SELECT p."id", p."url", p."description", 
             h."name" AS "hashtag",
             u."username", u."picture" AS "image",
@@ -25,14 +27,12 @@ async function getPosts() {
             ORDER BY p."createdAt" DESC
             LIMIT 20
             `
-        )
-    )
+  );
 }
 
 async function getPostsFromUser(id) {
-    return (
-        db.query(
-            `
+  return db.query(
+    `
             SELECT p."id", p."url", p."description",
             h."name" AS "hashtag",
             COALESCE(COUNT(l."id"), 0) AS "likesTotal"  
@@ -45,15 +45,25 @@ async function getPostsFromUser(id) {
             GROUP BY p."id", p."url", p."description", h."name"
             ORDER BY p."createdAt" DESC
             LIMIT 20
-            `, [id]
-        )
-    )
+            `,
+    [id]
+  );
+}
+
+async function searchPost(id) {
+  return db.query(`SELECT * FROM posts WHERE id = $1`), [id];
+}
+
+async function editPost(url, name, id) {
+  return db.query(`UPDATE posts SET url=$1 description=$2 WHERE id = $3`), [url, name, id];
 }
 
 const postRepository = {
-    insertPost,
-    getPosts,
-    getPostsFromUser
-}
+  insertPost,
+  getPosts,
+  getPostsFromUser,
+  searchPost,
+  editPost,
+};
 
 export default postRepository;
