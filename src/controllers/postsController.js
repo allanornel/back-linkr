@@ -66,7 +66,7 @@ export async function deletePost (req, res) {
         const { postId } = req.params
         const user = res.locals.user
 
-        console.log(postId)
+        
         const findPost = await postRepository.findPost(postId)
 
 
