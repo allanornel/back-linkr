@@ -51,11 +51,12 @@ async function getPostsFromUser(id) {
 }
 
 async function searchPost(id) {
-  return db.query(`SELECT * FROM posts WHERE id = $1`), [id];
+  return db.query(`SELECT * FROM posts WHERE id = $1`, [id]);
 }
 
-async function editPost(url, name, id) {
-  return db.query(`UPDATE posts SET url=$1 description=$2 WHERE id = $3`), [url, name, id];
+async function editPost(url, description, id) {
+  if (description === undefined) return db.query(`UPDATE posts SET url=$1 WHERE id = $2`, [url, id]);
+  return db.query(`UPDATE posts SET url=$1, description=$2 WHERE id = $3`, [url, description, id]);
 }
 
 const postRepository = {

@@ -64,18 +64,18 @@ export async function getUserPosts(req, res) {
 }
 
 export async function editPost(req, res) {
-  const { id } = req.params;
+  const { postId } = req.params;
   const { user } = JSON.parse(JSON.stringify(res.locals));
-  const { name, url } = req.body;
+  const { description, url } = req.body;
   try {
     const userResult = await userRepository.searchUser(user.id);
     if (userResult.rowCount === 0) return res.sendStatus(404);
 
-    const postResult = await postRepository.searchPost(id);
+    const postResult = await postRepository.searchPost(postId);
     if (postResult.rowCount === 0) return res.sendStatus(404);
     if (postResult.rows[0].userId !== user.id) return res.sendStatus(401);
 
-    await postRepository.editPost(url, name, id);
+    await postRepository.editPost(url, description, postId);
     res.sendStatus(200);
   } catch (error) {
     console.log(error);
