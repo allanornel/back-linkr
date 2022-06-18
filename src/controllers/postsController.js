@@ -60,3 +60,25 @@ export async function getUserPosts(req, res) {
         res.status(500).json({ error: error.message });
     }
 }
+
+export async function deletePost (req, res) {
+    try {
+        const { postId } = req.params
+        const user = res.locals.user
+
+        
+        const findPost = await postRepository.findPost(postId)
+
+
+        if (findPost.rows[0].userId !== user.id) {
+          return res.sendStatus(401)
+        }
+
+        await postRepository.deletePost(postId)
+
+        res.sendStatus(204)
+    } catch (error) {
+        console.log(error)
+        res.sendStatus(500)
+    }
+}
