@@ -11,9 +11,11 @@ async function insertPost(url, description, userId) {
 }
 
 async function getPosts() {
-  return db.query(
-    `
-            SELECT p."id", p."url", p."description", 
+
+    return (
+        db.query(
+            `
+            SELECT p."id", p."url", u."id" as "idUser", p."description", 
             h."name" AS "hashtag",
             u."username", u."picture" AS "image",
             COALESCE(COUNT(l."id"), 0) AS "likesTotal"  
@@ -23,7 +25,7 @@ async function getPosts() {
             LEFT JOIN "postsHashtags" ph ON ph."idPost" = p."id"
             LEFT JOIN hashtags h ON h."id" = ph."id"
             GROUP BY p."id", p."url", p."description", h."name",
-            u."username", u."picture"
+            u."username", u."picture", u."id"
             ORDER BY p."createdAt" DESC
             LIMIT 20
             `
@@ -50,8 +52,10 @@ async function getPostsFromUser(id) {
   );
 }
 
-async function searchPost(id) {
-  return db.query(`SELECT * FROM posts WHERE id = $1`, [id]);
+async function findPost(id) {
+    return await db.query(`
+        SELECT * FROM posts WHERE id=$1
+    `, [id]);
 }
 
 async function editPost(url, description, id) {
@@ -59,12 +63,17 @@ async function editPost(url, description, id) {
   return db.query(`UPDATE posts SET url=$1, description=$2 WHERE id = $3`, [url, description, id]);
 }
 
+async function deletePost(id) {
+    return await db.query(`DELETE FROM posts WHERE id = $1`, [id])
+}
+
 const postRepository = {
-  insertPost,
-  getPosts,
-  getPostsFromUser,
-  searchPost,
-  editPost,
-};
+    insertPost,
+    getPosts,
+    getPostsFromUser,
+    findPost,
+    deletePost,
+    editPost,
+}
 
 export default postRepository;
