@@ -13,7 +13,6 @@ const postRouter = Router();
 postRouter.use(validateToken);
 
 postRouter.post("/post/create", validateSchema(postSchema), createPost);
-postRouter.post("/post/like/:postId");
 postRouter.get("/posts");
 postRouter.put("/post/:postId", validateSchema(postSchema), linkValidation, editPost);
 postRouter.delete("/post/:postId", validateToken, deletePost);

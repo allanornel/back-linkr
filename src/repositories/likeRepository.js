@@ -21,10 +21,19 @@ async function deleteLike(userId, postId){
     `, [userId, postId]);
 }
 
+async function listOfLike(postId){
+    return await db.query(`
+        SELECT users.username FROM likes
+        JOIN users ON users.id = likes."userId"
+        WHERE likes."postId" = $1;
+    `, [postId]);
+}
+
 const likeRepository = {
     insertLike, 
     searchLike,
-    deleteLike
+    deleteLike,
+    listOfLike
 };
 
 export default likeRepository;

@@ -15,12 +15,35 @@ export async function likeOrDislikePost(req, res){
         const likeResult = await likeRepository.searchLike(user.id, postId);
         if (likeResult.rowCount > 0) {
             await likeRepository.deleteLike(user.id, postId);
-            res.status(200).send(false);
+            res.sendStatus(200);
         }
         if (likeResult.rowCount === 0) {
             await likeRepository.insertLike(user.id, postId);
-            res.status(200).send(true);
+            res.sendStatus(200);
         }
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
+}
+
+export async function getLikes(req, res){
+    const { user } = JSON.parse(JSON.stringify(res.locals));
+    const { id } = req.params;
+    try {
+        const query = await likeRepository.listOfLike(id);
+        const listUsernames = [...query.rows];
+
+        const numberLikes = listUsernames.length();
+        const twoFirst = [listUsernames[0].username, listUsernames[1].username];
+        
+        for(let i = 0; i < listUsernames.length; i++){
+            if(user.username === listUsernames[i].username){
+                twoFirst[0] = 'Você';
+            }
+        }
+
+        res.status(200).send({numberLikes, twoFirst});
     } catch (error) {
         console.log(error);
         res.sendStatus(500);
