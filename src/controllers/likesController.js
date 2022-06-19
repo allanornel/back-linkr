@@ -39,9 +39,10 @@ export async function getLikes(req, res) {
     const isLike = false;
 
     for (let i = 0; i < listUsernames.length; i++) {
-      if (user.username === listUsernames[i].username) {
+      if (user.username === listUsernames[i]?.username) {
         twoFirst[0] = "Você";
         isLike = true;
+        break;
       }
     }
 
