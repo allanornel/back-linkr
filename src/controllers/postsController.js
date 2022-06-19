@@ -80,6 +80,8 @@ export async function deletePost (req, res) {
           return res.sendStatus(401)
         }
 
+        await hastagRepository.deletePostHashTags(postId)
+
         await postRepository.deletePost(postId)
 
         res.sendStatus(204)
