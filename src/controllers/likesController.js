@@ -36,14 +36,16 @@ export async function getLikes(req, res){
 
         const numberLikes = listUsernames.length();
         const twoFirst = [listUsernames[0].username, listUsernames[1].username];
+        const isLike = false;
         
         for(let i = 0; i < listUsernames.length; i++){
             if(user.username === listUsernames[i].username){
                 twoFirst[0] = 'Você';
+                isLike = true;
             }
         }
 
-        res.status(200).send({numberLikes, twoFirst});
+        res.status(200).send({numberLikes, twoFirst, isLike});
     } catch (error) {
         console.log(error);
         res.sendStatus(500);
