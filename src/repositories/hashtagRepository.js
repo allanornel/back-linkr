@@ -12,7 +12,7 @@ async function insertHashtag(hashtags, postId) {
 `;
   let array = [];
   for (let i = 0; i < hashtags.length; i++) {
-    let Args = [hashtags[i], postId];
+    let Args = [hashtags[i].replace(/#/, '').trim(), postId];
     array.push(await db.query(querySrtring, Args));
   }
   return array;

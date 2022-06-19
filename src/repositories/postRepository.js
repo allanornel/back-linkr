@@ -3,7 +3,7 @@ import db from "./../config/db.js";
 async function insertPost(url, description, userId) {
     return db.query(`
         INSERT INTO posts (url, description, "userId")
-        VALUES ($1, $2, $3); 
+        VALUES ($1, $2, $3) RETURNING id; 
         `, [url, description, userId]); 
 }
 
