@@ -5,14 +5,15 @@ async function insertPost(url, description, userId) {
     `
         INSERT INTO posts (url, description, "userId")
         VALUES ($1, $2, $3) RETURNING id; 
-        `, [url, description, userId]); 
+        `,
+    [url, description, userId]
+  );
 }
 
 async function getPosts() {
-
-    return (
-        db.query(
-            `
+  return;
+  db.query(
+    `
             SELECT p."id", p."url", u."id" as "idUser", p."description", 
             h."name" AS "hashtag",
             u."username", u."picture" AS "image",
@@ -51,9 +52,12 @@ async function getPostsFromUser(id) {
 }
 
 async function findPost(id) {
-    return await db.query(`
+  return await db.query(
+    `
         SELECT * FROM posts WHERE id=$1
-    `, [id]);
+    `,
+    [id]
+  );
 }
 
 async function editPost(url, description, id) {
@@ -62,16 +66,16 @@ async function editPost(url, description, id) {
 }
 
 async function deletePost(id) {
-    return await db.query(`DELETE FROM posts WHERE id = $1`, [id])
+  return await db.query(`DELETE FROM posts WHERE id = $1`, [id]);
 }
 
 const postRepository = {
-    insertPost,
-    getPosts,
-    getPostsFromUser,
-    findPost,
-    deletePost,
-    editPost,
-}
+  insertPost,
+  getPosts,
+  getPostsFromUser,
+  findPost,
+  deletePost,
+  editPost,
+};
 
 export default postRepository;
