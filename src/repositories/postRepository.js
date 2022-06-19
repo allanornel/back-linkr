@@ -1,13 +1,15 @@
 import db from "./../config/db.js";
 
 async function insertPost(url, description, userId) {
-    return db.query(`
+  return db.query(
+    `
         INSERT INTO posts (url, description, "userId")
         VALUES ($1, $2, $3) RETURNING id; 
         `, [url, description, userId]); 
 }
 
 async function getPosts() {
+
     return (
         db.query(
             `
@@ -25,14 +27,12 @@ async function getPosts() {
             ORDER BY p."createdAt" DESC
             LIMIT 20
             `
-        )
-    )
+  );
 }
 
 async function getPostsFromUser(id) {
-    return (
-        db.query(
-            `
+  return db.query(
+    `
             SELECT p."id", p."url", p."description",
             h."name" AS "hashtag",
             COALESCE(COUNT(l."id"), 0) AS "likesTotal"  
@@ -45,15 +45,20 @@ async function getPostsFromUser(id) {
             GROUP BY p."id", p."url", p."description", h."name"
             ORDER BY p."createdAt" DESC
             LIMIT 20
-            `, [id]
-        )
-    )
+            `,
+    [id]
+  );
 }
 
 async function findPost(id) {
     return await db.query(`
         SELECT * FROM posts WHERE id=$1
     `, [id]);
+}
+
+async function editPost(url, description, id) {
+  if (description === undefined) return db.query(`UPDATE posts SET url=$1 WHERE id = $2`, [url, id]);
+  return db.query(`UPDATE posts SET url=$1, description=$2 WHERE id = $3`, [url, description, id]);
 }
 
 async function deletePost(id) {
@@ -65,7 +70,8 @@ const postRepository = {
     getPosts,
     getPostsFromUser,
     findPost,
-    deletePost
+    deletePost,
+    editPost,
 }
 
 export default postRepository;
