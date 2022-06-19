@@ -4,10 +4,8 @@ async function insertPost(url, description, userId) {
   return db.query(
     `
         INSERT INTO posts (url, description, "userId")
-        VALUES ($1, $2, $3); 
-        `,
-    [url, description, userId]
-  );
+        VALUES ($1, $2, $3) RETURNING id; 
+        `, [url, description, userId]); 
 }
 
 async function getPosts() {

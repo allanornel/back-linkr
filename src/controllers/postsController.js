@@ -2,6 +2,8 @@ import urlMetadata from "url-metadata";
 
 import userRepository from "./../repositories/usersRepository.js";
 import postRepository from "./../repositories/postRepository.js";
+import hastagRepository from "./../repositories/hashtagRepository.js";
+
 
 export async function createPost(req, res) {
   const { user } = JSON.parse(JSON.stringify(res.locals));
@@ -10,7 +12,11 @@ export async function createPost(req, res) {
     const userResult = await userRepository.searchUser(user.id);
     if (userResult.rowCount === 0) return res.sendStatus(404);
 
-    await postRepository.insertPost(url, description, user.id);
+    const post = await postRepository.insertPost(url, description, user.id);
+
+    const hastags = description.match(/(\s|^)\#\w\w+\b/gm)
+
+    await hastagRepository.insertHashtag(hastags, post.rows[0].id)
 
     res.sendStatus(201);
   } catch (error) {
