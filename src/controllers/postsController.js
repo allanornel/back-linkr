@@ -2,8 +2,7 @@ import urlMetadata from "url-metadata";
 
 import userRepository from "./../repositories/usersRepository.js";
 import postRepository from "./../repositories/postRepository.js";
-import hastagRepository from "./../repositories/hashtagRepository.js";
-
+import hashtagRepository from "./../repositories/hashtagRepository.js";
 
 export async function createPost(req, res) {
   const { user } = JSON.parse(JSON.stringify(res.locals));
@@ -13,11 +12,15 @@ export async function createPost(req, res) {
     if (userResult.rowCount === 0) return res.sendStatus(404);
 
     const post = await postRepository.insertPost(url, description, user.id);
-
-    const hastags = description.match(/(\s|^)\#\w\w+\b/gm)
-
-    await hastagRepository.insertHashtag(hastags, post.rows[0].id)
-
+    const postId = post.rows[0].id;
+    const hashtags = description.match(/(\s|^)\#\w\w+\b/gm);
+    await Promise.all(
+      hashtags.map(async (hashtag) => {
+        const checkHashtag = await hashtagRepository.checkHashtagByName(hashtag.replace(/#/, "").trim());
+        if (checkHashtag.rowCount === 0) await hashtagRepository.insertHashtag([hashtag], postId);
+        else await hashtagRepository.insertHashtagExists(checkHashtag.rows[0].id, postId);
+      })
+    );
     res.sendStatus(201);
   } catch (error) {
     console.log(error);
@@ -82,6 +85,16 @@ export async function editPost(req, res) {
     if (postResult.rows[0].userId !== user.id) return res.sendStatus(401);
 
     await postRepository.editPost(url, description, postId);
+    await hashtagRepository.deletePostHashTags(postId);
+
+    const hashtags = description.match(/(\s|^)\#\w\w+\b/gm);
+    await Promise.all(
+      hashtags.map(async (hashtag) => {
+        const checkHashtag = await hashtagRepository.checkHashtagByName(hashtag.replace(/#/, "").trim());
+        if (checkHashtag.rowCount === 0) await hashtagRepository.insertHashtag([hashtag], postId);
+        else await hashtagRepository.insertHashtagExists(checkHashtag.rows[0].id, postId);
+      })
+    );
     res.sendStatus(200);
   } catch (error) {
     console.log(error);
@@ -89,26 +102,24 @@ export async function editPost(req, res) {
   }
 }
 
-export async function deletePost (req, res) {
-    try {
-        const { postId } = req.params
-        const user = res.locals.user
+export async function deletePost(req, res) {
+  try {
+    const { postId } = req.params;
+    const user = res.locals.user;
 
-        
-        const findPost = await postRepository.findPost(postId)
+    const findPost = await postRepository.findPost(postId);
 
-
-        if (findPost.rows[0].userId !== user.id) {
-          return res.sendStatus(401)
-        }
-
-        await hastagRepository.deletePostHashTags(postId)
-
-        await postRepository.deletePost(postId)
-
-        res.sendStatus(204)
-    } catch (error) {
-        console.log(error)
-        res.sendStatus(500)
+    if (findPost.rows[0].userId !== user.id) {
+      return res.sendStatus(401);
     }
+
+    await hashtagRepository.deletePostHashTags(postId);
+
+    await postRepository.deletePost(postId);
+
+    res.sendStatus(204);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
 }

@@ -5,17 +5,25 @@ async function insertHashtag(hashtags, postId) {
     with hashtag as (
         insert into hashtags (name)
         values ($1)
-        returning id
+        returning id   
     )
     insert into "postsHashtags" ("idPost", "idHashtag")
     values ($2, (select id from hashtag));
 `;
   let array = [];
   for (let i = 0; i < hashtags.length; i++) {
-    let Args = [hashtags[i].replace(/#/, '').trim(), postId];
+    let Args = [hashtags[i].replace(/#/, "").trim(), postId];
     array.push(await db.query(querySrtring, Args));
   }
   return array;
+}
+
+async function insertHashtagExists(idHashtag, idPost) {
+  return db.query(
+    `INSERT INTO "postsHashtags" ("idPost", "idHashtag")
+  values ($1, $2)`,
+    [idPost, idHashtag]
+  );
 }
 
 async function getHashtags() {
@@ -42,7 +50,7 @@ async function checkHashtagByName(hashtag) {
 }
 
 async function deletePostHashTags(idPost) {
-  return db.query(`DELETE FROM "postsHashtags" WHERE "idPost" = $1`, [idPost])
+  return db.query(`DELETE FROM "postsHashtags" WHERE "idPost" = $1`, [idPost]);
 }
 
 const hashtagRepository = {
@@ -50,6 +58,7 @@ const hashtagRepository = {
   getHashtags,
   getHashtagByName,
   checkHashtagByName,
-  deletePostHashTags
+  deletePostHashTags,
+  insertHashtagExists,
 };
 export default hashtagRepository;
