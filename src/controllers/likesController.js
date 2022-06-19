@@ -36,7 +36,7 @@ export async function getLikes(req, res) {
 
     const numberLikes = listUsernames.length;
     const twoFirst = [listUsernames[0]?.username, listUsernames[1]?.username];
-    const isLike = false;
+    let isLike = false;
 
     for (let i = 0; i < listUsernames.length; i++) {
       if (user.username === listUsernames[i].username) {
