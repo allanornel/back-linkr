@@ -11,8 +11,7 @@ async function insertPost(url, description, userId) {
 }
 
 async function getPosts() {
-  return;
-  db.query(
+  return db.query(
     `
             SELECT p."id", p."url", u."id" as "idUser", p."description", 
             h."name" AS "hashtag",
