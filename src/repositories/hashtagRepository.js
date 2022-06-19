@@ -41,10 +41,15 @@ async function checkHashtagByName(hashtag) {
   return db.query(`SELECT * FROM hashtags WHERE name = $1`, [hashtag]);
 }
 
+async function deletePostHashTags(idPost) {
+  return db.query(`DELETE FROM "postsHashtags" WHERE "idPost" = $1`, [idPost])
+}
+
 const hashtagRepository = {
   insertHashtag,
   getHashtags,
   getHashtagByName,
   checkHashtagByName,
+  deletePostHashTags
 };
 export default hashtagRepository;
