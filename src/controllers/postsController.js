@@ -91,13 +91,15 @@ export async function editPost(req, res) {
     await hashtagRepository.deletePostHashTags(postId);
 
     const hashtags = description.match(/(\s|^)\#\w\w+\b/gm);
-    await Promise.all(
-      hashtags.map(async (hashtag) => {
-        const checkHashtag = await hashtagRepository.checkHashtagByName(hashtag.replace(/#/, "").trim());
-        if (checkHashtag.rowCount === 0) await hashtagRepository.insertHashtag([hashtag], postId);
-        else await hashtagRepository.insertHashtagExists(checkHashtag.rows[0].id, postId);
-      })
-    );
+    if (hashtags) {
+      await Promise.all(
+        hashtags.map(async (hashtag) => {
+          const checkHashtag = await hashtagRepository.checkHashtagByName(hashtag.replace(/#/, "").trim());
+          if (checkHashtag.rowCount === 0) await hashtagRepository.insertHashtag([hashtag], postId);
+          else await hashtagRepository.insertHashtagExists(checkHashtag.rows[0].id, postId);
+        })
+      );
+    }
     res.sendStatus(200);
   } catch (error) {
     console.log(error);
