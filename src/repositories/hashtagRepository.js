@@ -37,10 +37,20 @@ async function getHashtags() {
 
 async function getHashtagByName(hashtag) {
   return db.query(
-    `SELECT p.* FROM hashtags h 
-    JOIN "postsHashtags" ph ON ph."idHashtag"=h.id
-    JOIN posts p ON ph."idPost" = p.id 
-    WHERE h.name = $1;`,
+    `SELECT p."id", p."url", u."id" as "idUser", p."description", 
+    h."name" AS "hashtag",
+    u."username", u."picture" AS "image",
+    COALESCE(COUNT(l."id"), 0) AS "likesTotal"  
+    FROM posts p
+    JOIN users u ON u."id" = p."userId"
+    LEFT JOIN likes l ON l."userId" = p."userId"
+    LEFT JOIN "postsHashtags" ph ON ph."idPost" = p."id"
+    LEFT JOIN hashtags h ON h."id" = ph."id"
+    WHERE h.name = $1
+    GROUP BY p."id", p."url", p."description", h."name",
+    u."username", u."picture", u."id"
+    ORDER BY p."createdAt" DESC
+    LIMIT 20`,
     [hashtag]
   );
 }
