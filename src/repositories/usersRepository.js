@@ -24,11 +24,16 @@ async function findByUser(email) {
   return db.query(`SELECT * FROM users WHERE email = $1`, [email])
 }
 
+async function getUsers() {
+  return db.query(`SELECT * from users`);
+}
+
 const userRepository = {
   checkSignUp,
   insertUser,
   searchUser,
-  findByUser
+  findByUser,
+  getUsers
 };
 
 export default userRepository;

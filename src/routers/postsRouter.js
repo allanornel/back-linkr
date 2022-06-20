@@ -5,7 +5,7 @@ import { validateSchema } from "./../middlewares/validateSchema.js";
 import linkValidation from "./../middlewares/linkValidation.js";
 import postSchema from "./../schemas/postSchema.js";
 
-import { createPost, getTimeline, getUserPosts, editPost, deletePost } from "./../controllers/postsController.js";
+import { createPost, getTimeline, getUserPosts, editPost, deletePost, getUsers } from "./../controllers/postsController.js";
 import { validateToken } from "./../middlewares/authMiddleware.js";
 
 const postRouter = Router();
@@ -18,5 +18,6 @@ postRouter.put("/post/:postId", validateSchema(postSchema), linkValidation, edit
 postRouter.delete("/post/:postId", validateToken, deletePost);
 postRouter.get("/timeline", getTimeline);
 postRouter.get("/user/:id", getUserPosts);
+postRouter.get("/users", getUsers);
 
 export default postRouter;
