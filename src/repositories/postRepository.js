@@ -43,7 +43,8 @@ async function getPostsFromUser(id) {
             LEFT JOIN "postsHashtags" ph ON ph."idPost" = p."id"
             LEFT JOIN hashtags h ON h."id" = ph."id"
             WHERE p."userId" = $1
-            GROUP BY p."id", p."url", p."description", h."name"
+            GROUP BY p."id", p."url", p."description", h."name",
+            u."username", u."picture", u."id"
             ORDER BY p."createdAt" DESC
             LIMIT 20
             `,
