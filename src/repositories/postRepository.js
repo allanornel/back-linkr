@@ -33,8 +33,9 @@ async function getPosts() {
 async function getPostsFromUser(id) {
   return db.query(
     `
-            SELECT p."id", p."url", p."description",
+            SELECT p."id", p."url", u."id" as "idUser", p."description", 
             h."name" AS "hashtag",
+            u."username", u."picture" AS "image",
             COALESCE(COUNT(l."id"), 0) AS "likesTotal"  
             FROM posts p
             JOIN users u ON u."id" = p."userId"
