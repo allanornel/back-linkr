@@ -1,4 +1,5 @@
 import hashtagRepository from "../repositories/hashtagRepository.js";
+import urlMetadata from "url-metadata";
 
 export async function getTopHashtags(req, res) {
   try {
