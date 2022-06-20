@@ -3,6 +3,7 @@ import urlMetadata from "url-metadata";
 import userRepository from "./../repositories/usersRepository.js";
 import postRepository from "./../repositories/postRepository.js";
 import hashtagRepository from "./../repositories/hashtagRepository.js";
+import likeRepository from "./../repositories/likeRepository.js";
 
 export async function createPost(req, res) {
   const { user } = JSON.parse(JSON.stringify(res.locals));
@@ -114,6 +115,7 @@ export async function deletePost(req, res) {
     }
 
     await hashtagRepository.deletePostHashTags(postId);
+    await likeRepository.deleteLikesForDeletePost(postId);
 
     await postRepository.deletePost(postId);
 
