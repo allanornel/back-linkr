@@ -127,3 +127,13 @@ export async function deletePost(req, res) {
     res.sendStatus(500);
   }
 }
+
+export async function getUsers(req, res) {
+  try {
+    const users = await userRepository.getUsers();
+    res.status(201).send(users.rows);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+}
