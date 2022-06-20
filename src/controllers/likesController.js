@@ -40,7 +40,18 @@ export async function getLikes(req, res) {
 
     for (let i = 0; i < listUsernames.length; i++) {
       if (user.username === listUsernames[i]?.username) {
-        twoFirst[0] = "Você";
+        for( let j = 0; j < twoFirst.length; j++ ){
+          if( twoFirst[j] === user.username ){
+            twoFirst.splice(j, 1);
+          }
+        }
+        
+        twoFirst.unshift('Você');
+
+        if(twoFirst.length > 2){
+          twoFirst.pop();
+        }
+
         isLike = true;
         break;
       }
