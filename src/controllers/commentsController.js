@@ -21,3 +21,17 @@ export async function insertComment(req, res){
         res.sendStatus(500);
     }
 }
+
+export async function searchComments(req, res){
+    const { id } = req.params;
+    const { user } = JSON.parse(JSON.stringify(res.locals));
+    try {
+        const queryComments =  await commentRepository.searchComments(id);
+        const listComments = [...queryComments.rows];
+
+        res.status(200).send(listComments);
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
+}
