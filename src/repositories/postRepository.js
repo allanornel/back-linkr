@@ -13,40 +13,40 @@ async function insertPost(url, description, userId) {
 async function getPosts() {
   return db.query(
     `
-            SELECT p."id", p."url", u."id" as "idUser", p."description", 
-            h."name" AS "hashtag",
-            u."username", u."picture" AS "image",
-            COALESCE(COUNT(l."id"), 0) AS "likesTotal"  
-            FROM posts p
-            JOIN users u ON u."id" = p."userId"
-            LEFT JOIN likes l ON l."userId" = p."userId"
-            LEFT JOIN "postsHashtags" ph ON ph."idPost" = p."id"
-            LEFT JOIN hashtags h ON h."id" = ph."id"
-            GROUP BY p."id", p."url", p."description", h."name",
-            u."username", u."picture", u."id"
-            ORDER BY p."createdAt" DESC
-            LIMIT 20
-            `
+      SELECT p."id", p."url", u."id" as "idUser", p."description", 
+      h."name" AS "hashtag",
+      u."username", u."picture" AS "image",
+      COALESCE(COUNT(c."id"), 0) AS "commentsTotal"  
+      FROM posts p
+      JOIN users u ON u."id" = p."userId"
+      LEFT JOIN comments c ON c."postId" = p."id"
+      LEFT JOIN "postsHashtags" ph ON ph."idPost" = p."id"
+      LEFT JOIN hashtags h ON h."id" = ph."id"
+      GROUP BY p."id", p."url", p."description", h."name",
+      u."username", u."picture", u."id"
+      ORDER BY p."createdAt" DESC
+      LIMIT 20;
+    `
   );
 }
 
 async function getPostsFromUser(id) {
   return db.query(
     `
-            SELECT p."id", p."url", u."id" as "idUser", p."description", 
-            h."name" AS "hashtag",
-            u."username", u."picture" AS "image",
-            COALESCE(COUNT(l."id"), 0) AS "likesTotal"  
-            FROM posts p
-            JOIN users u ON u."id" = p."userId"
-            LEFT JOIN likes l ON l."userId" = p."userId"
-            LEFT JOIN "postsHashtags" ph ON ph."idPost" = p."id"
-            LEFT JOIN hashtags h ON h."id" = ph."id"
-            WHERE p."userId" = $1
-            GROUP BY p."id", p."url", p."description", h."name",
-            u."username", u."picture", u."id"
-            ORDER BY p."createdAt" DESC
-            LIMIT 20
+      SELECT p."id", p."url", u."id" as "idUser", p."description", 
+      h."name" AS "hashtag",
+      u."username", u."picture" AS "image",
+      COALESCE(COUNT(c."id"), 0) AS "commentsTotal"  
+      FROM posts p
+      JOIN users u ON u."id" = p."userId"
+      LEFT JOIN comments c ON c."postId" = p."id"
+      LEFT JOIN "postsHashtags" ph ON ph."idPost" = p."id"
+      LEFT JOIN hashtags h ON h."id" = ph."id"
+      WHERE p."userId" = $1
+      GROUP BY p."id", p."url", p."description", h."name",
+      u."username", u."picture", u."id"
+      ORDER BY p."createdAt" DESC
+      LIMIT 20;
             `,
     [id]
   );
