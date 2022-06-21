@@ -10,7 +10,14 @@ async function insertPost(url, description, userId) {
   );
 }
 
-async function getPosts() {
+async function getTotalPosts() {
+    return db.query(`
+        SELECT COALESCE(COUNT(p."id"), 0) AS "numberOfPosts"
+        FROM posts p
+    `)
+}
+
+async function getPosts(offset) {
   return db.query(
     `
             SELECT p."id", p."url", u."id" as "idUser", p."description", 
@@ -25,8 +32,10 @@ async function getPosts() {
             GROUP BY p."id", p."url", p."description", h."name",
             u."username", u."picture", u."id"
             ORDER BY p."createdAt" DESC
-            LIMIT 20
-            `
+            OFFSET $1
+            LIMIT 10
+            `,
+        [offset]
   );
 }
 
@@ -77,6 +86,7 @@ const postRepository = {
   findPost,
   deletePost,
   editPost,
+  getTotalPosts
 };
 
 export default postRepository;

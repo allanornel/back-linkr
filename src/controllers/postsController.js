@@ -33,9 +33,10 @@ export async function createPost(req, res) {
 
 export async function getTimeline(req, res) {
   //const { user } = JSON.parse(JSON.stringify(res.locals));
+  const { offset } = req.body;
 
   try {
-    const { rows } = await postRepository.getPosts();
+    const { rows } = await postRepository.getPosts(offset);
 
     await Promise.all(
       rows.map(async (post) => {
@@ -47,6 +48,15 @@ export async function getTimeline(req, res) {
       })
     );
 
+    res.status(200).send(rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+export async function getNumberOfPosts(req, res) {
+  try {
+    const { rows } = await postRepository.getTotalPosts();
     res.status(200).send(rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
