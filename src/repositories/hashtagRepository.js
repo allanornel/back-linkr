@@ -40,11 +40,11 @@ async function getHashtagByName(hashtag) {
     `SELECT p."id", p."url", u."id" as "idUser", p."description", 
     h."name" AS "hashtag",
     u."username", u."picture" AS "image",
-    COALESCE(COUNT(l."id"), 0) AS "likesTotal"  
+    COALESCE(COUNT(c."id"), 0) AS "commentsTotal"  
     FROM hashtags h
     JOIN "postsHashtags" ph ON ph."idHashtag" = h.id    
     LEFT JOIN posts p ON ph."idPost" = p.id
-    LEFT JOIN likes l ON l."postId" = p.id
+    LEFT JOIN comments c ON c."postId" = p."id"
     LEFT JOIN users u ON p."userId" = u.id
     WHERE h.name = $1
     GROUP BY p."id", p."url", p."description", h."name",
