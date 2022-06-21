@@ -1,5 +1,5 @@
 import postRepository from "./../repositories/postRepository.js";
-import userRepository from './../repositories/userRepository.js';
+import userRepository from './../repositories/usersRepository.js';
 import commentRepository from "./../repositories/commentRepository.js";
 
 export async function insertComment(req, res){

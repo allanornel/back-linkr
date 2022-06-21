@@ -3,7 +3,7 @@ import { Router } from 'express';
 import { insertComment } from '../controllers/commentsController.js';
 import { validateToken } from './../middlewares/authMiddleware.js';
 import { validateSchema } from './../middlewares/validateSchema.js';
-import commentSchema from './../schemas/commentSchema/js';
+import commentSchema from './../schemas/commentSchema.js';
 
 const commentsRouter = Router();
 
