@@ -12,7 +12,7 @@ async function searchComments(postId){
         SELECT comments."userId", comments.comment, users.username, users.picture
         FROM comments
         JOIN users ON comments."userId" = users.id
-        WHERE comments."postId" = 154;
+        WHERE comments."postId" = $1;
     `, [postId]);
 }
 
