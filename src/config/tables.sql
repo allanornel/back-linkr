@@ -49,7 +49,8 @@ CREATE TABLE "followers" (
 CREATE TABLE "shares"(
 	"id" serial NOT NULL PRIMARY KEY,
 	"postId" int NOT NULL REFERENCES posts(id),
-	"userId" int NOT NULL REFERENCES users(id)
+	"userId" int NOT NULL REFERENCES users(id),
+	"createdAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 CREATE TABLE "comments"(
