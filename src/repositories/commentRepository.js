@@ -13,7 +13,7 @@ async function searchComments(postId){
         FROM comments
         JOIN users ON comments."userId" = users.id
         WHERE comments."postId" = 154;
-    `, postId);
+    `, [postId]);
 }
 
 const commentRepository = {
