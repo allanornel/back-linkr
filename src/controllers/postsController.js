@@ -71,7 +71,8 @@ export async function getUserPosts(req, res) {
 
     res.status(200).send(rows);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.log(error);
+    res.status(500).send(error);
   }
 }
 
