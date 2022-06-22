@@ -33,20 +33,30 @@ export async function createPost(req, res) {
 
 export async function getTimeline(req, res) {
   //const { user } = JSON.parse(JSON.stringify(res.locals));
+  const { limit } = req.body;
 
   try {
-    const { rows } = await postRepository.getPosts();
-
+    const { rows } = await postRepository.getPosts(limit);
+    
     await Promise.all(
       rows.map(async (post) => {
         const { title, image, description } = await urlMetadata(post.url);
-
         post.title = title;
         post.postImage = image;
         post.urlDescription = description;
       })
     );
+      
+    res.status(200).send(rows);
 
+  } catch (error) {
+    res.status(500).send(error);
+  }
+}
+
+export async function getNumberOfPosts(req, res) {
+  try {
+    const { rows } = await postRepository.getTotalPosts();
     res.status(200).send(rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
