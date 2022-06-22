@@ -17,7 +17,7 @@ async function getTotalPosts() {
     `)
 }
 
-async function getPosts(limit) {
+async function getPosts(limit, userId) {
   return db.query(
     `
         SELECT p."id", p."url", u."id" as "idUser", p."description", 
@@ -34,9 +34,9 @@ async function getPosts(limit) {
         GROUP BY p."id", p."url", p."description", h."name",
         u."username", u."picture", u."id"
         ORDER BY p."createdAt" DESC
-        LIMIT $1;
+        LIMIT $2;
     `,
-        [limit]
+        [userId, limit]
   );
 }
 

@@ -32,11 +32,13 @@ export async function createPost(req, res) {
 }
 
 export async function getTimeline(req, res) {
-  //const { user } = JSON.parse(JSON.stringify(res.locals));
+  const { user } = JSON.parse(JSON.stringify(res.locals));
   const { limit } = req.body;
 
   try {
-    const { rows } = await postRepository.getPosts(limit);
+    console.log(user.userId)
+    const { id } = user;
+    const { rows } = await postRepository.getPosts(limit, id);
     
     await Promise.all(
       rows.map(async (post) => {
