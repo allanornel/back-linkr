@@ -38,7 +38,6 @@ export async function getTimeline(req, res) {
   const { limit } = req.body;
 
   try {
-    console.log(user.userId)
     const { id } = user;
     const { rows } = await postRepository.getPosts(limit, id);
     
