@@ -15,7 +15,7 @@ postRouter.use(validateToken);
 postRouter.post("/post/create", validateSchema(postSchema), createPost);
 postRouter.get("/posts");
 postRouter.put("/post/:postId", validateSchema(postSchema), linkValidation, editPost);
-postRouter.delete("/post/:postId", validateToken, deletePost);
+postRouter.delete("/post/:postId", deletePost);
 postRouter.post("/timeline", getTimeline);
 postRouter.get("/user/:id", getUserPosts);
 postRouter.get("/users", getUsers);

@@ -40,7 +40,7 @@ export async function getTimeline(req, res) {
   try {
     const { id } = user;
     const { rows } = await postRepository.getPosts(limit, id);
-    
+
     await Promise.all(
       rows.map(async (post) => {
         const { title, image, description } = await urlMetadata(post.url);
