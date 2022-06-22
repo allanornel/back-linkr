@@ -40,7 +40,7 @@ export async function searchComments(req, res){
             const { userId } = comment;
             if( authorId == userId ) {
                 comment.userStatus = `post's author`;
-            } else if( listFollowing.includes({followingId: userId})) {
+            } else if( listFollowing.some((following) => following.followingId == userId )) {
                 comment.userStatus = `following`;
             }
         })
