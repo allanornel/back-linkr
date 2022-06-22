@@ -147,7 +147,8 @@ export async function deletePost(req, res) {
 
 export async function getUsers(req, res) {
   try {
-    const users = await userRepository.getUsers();
+    const user = res.locals.user;
+    const users = await userRepository.getUsers(user.id);
     res.status(201).send(users.rows);
   } catch (error) {
     console.log(error);

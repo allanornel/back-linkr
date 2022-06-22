@@ -26,11 +26,16 @@ async function findByUser(email) {
   return db.query(`SELECT * FROM users WHERE email = $1`, [email]);
 }
 
-async function getUsers() {
-  return db.query(`
-  SELECT u.*, f."followerId" FROM users u
+async function getUsers(userId) {
+  return db.query(
+    `
+  SELECT u.*, 
+  CASE WHEN f."followerId" = $1 THEN true ELSE false AS following
+  FROM users u
   LEFT JOIN followers f ON u.id = f."followerId"
-  `);
+  `,
+    [userId]
+  );
 }
 
 const userRepository = {
