@@ -5,17 +5,25 @@ async function insertHashtag(hashtags, postId) {
     with hashtag as (
         insert into hashtags (name)
         values ($1)
-        returning id
+        returning id   
     )
     insert into "postsHashtags" ("idPost", "idHashtag")
     values ($2, (select id from hashtag));
 `;
   let array = [];
   for (let i = 0; i < hashtags.length; i++) {
-    let Args = [hashtags[i].replace(/#/, '').trim(), postId];
+    let Args = [hashtags[i].replace(/#/, "").trim(), postId];
     array.push(await db.query(querySrtring, Args));
   }
   return array;
+}
+
+async function insertHashtagExists(idHashtag, idPost) {
+  return db.query(
+    `INSERT INTO "postsHashtags" ("idPost", "idHashtag")
+  values ($1, $2)`,
+    [idPost, idHashtag]
+  );
 }
 
 async function getHashtags() {
@@ -29,10 +37,20 @@ async function getHashtags() {
 
 async function getHashtagByName(hashtag) {
   return db.query(
-    `SELECT p.* FROM hashtags h 
-    JOIN "postsHashtags" ph ON ph."idHashtag"=h.id
-    JOIN posts p ON ph."idPost" = p.id 
-    WHERE h.name = $1;`,
+    `SELECT p."id", p."url", u."id" as "idUser", p."description", 
+    h."name" AS "hashtag",
+    u."username", u."picture" AS "image",
+    COALESCE(COUNT(c."id"), 0) AS "commentsTotal"  
+    FROM hashtags h
+    JOIN "postsHashtags" ph ON ph."idHashtag" = h.id    
+    LEFT JOIN posts p ON ph."idPost" = p.id
+    LEFT JOIN comments c ON c."postId" = p."id"
+    LEFT JOIN users u ON p."userId" = u.id
+    WHERE h.name = $1
+    GROUP BY p."id", p."url", p."description", h."name",
+    u."username", u."picture", u."id"
+    ORDER BY p."createdAt" DESC
+    LIMIT 20`,
     [hashtag]
   );
 }
@@ -42,7 +60,7 @@ async function checkHashtagByName(hashtag) {
 }
 
 async function deletePostHashTags(idPost) {
-  return db.query(`DELETE FROM "postsHashtags" WHERE "idPost" = $1`, [idPost])
+  return db.query(`DELETE FROM "postsHashtags" WHERE "idPost" = $1`, [idPost]);
 }
 
 const hashtagRepository = {
@@ -50,6 +68,7 @@ const hashtagRepository = {
   getHashtags,
   getHashtagByName,
   checkHashtagByName,
-  deletePostHashTags
+  deletePostHashTags,
+  insertHashtagExists,
 };
 export default hashtagRepository;

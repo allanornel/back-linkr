@@ -13,6 +13,4 @@ dotenv.config();
 app.use(router);
 
 //open server
-app.listen(process.env.PORT, () =>
-  console.log("Server ON port " + process.env.PORT)
-);
+app.listen(process.env.PORT, () => console.log("Server ON port " + process.env.PORT));
