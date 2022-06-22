@@ -12,10 +12,15 @@ async function notFollower(from, to) {
   return db.query(`DELETE FROM followers WHERE "followingId" = $1 AND "followerId" = $2`, [from, to])
 }
 
+async function searchFollowing(followerId) {
+  return db.query(`SELECT "followingId" FROM followers WHERE "followerId"=$1;`, [followerId])
+}
+
 const followersRepository = {
   searchFollow,
   follow,
-  notFollower
+  notFollower,
+  searchFollowing
 }
 
 export default followersRepository

@@ -1,6 +1,7 @@
 import postRepository from "./../repositories/postRepository.js";
 import userRepository from './../repositories/usersRepository.js';
 import commentRepository from "./../repositories/commentRepository.js";
+import followersRepository from "./../repositories/followRepository.js";
 
 export async function insertComment(req, res){
     const { comment } = req.body;
@@ -26,8 +27,23 @@ export async function searchComments(req, res){
     const { id } = req.params;
     const { user } = JSON.parse(JSON.stringify(res.locals));
     try {
+        const queryAuthor = await postRepository.findPost(id);
+        const authorId = queryAuthor.rows[0]?.userId;
+
         const queryComments =  await commentRepository.searchComments(id);
         const listComments = [...queryComments.rows];
+
+        const queryFollowing = await followersRepository.searchFollowing(user.id);
+        const listFollowing = [...queryFollowing.rows];
+
+        listComments.map((comment) => {
+            const { userId } = comment;
+            if( authorId == userId ) {
+                comment.userStatus = `post's author`;
+            } else if( listFollowing.includes({followingId: userId})) {
+                comment.userStatus = `following`;
+            }
+        })
 
         res.status(200).send(listComments);
     } catch (error) {
