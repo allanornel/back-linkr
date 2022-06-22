@@ -27,7 +27,7 @@ async function findByUser(email) {
 }
 
 async function getUsers() {
-  return db.query(`S
+  return db.query(`
   SELECT u.*, f."followerId" FROM users u
   LEFT JOIN followers f ON u.id = f."followerId"
   `);
