@@ -28,9 +28,14 @@ async function getSharesByPostId(postId) {
 //             ORDER BY p."createdAt" DESC
 //             LIMIT 20;
 
+async function deleteSharesPost(postId) {
+  return db.query(`DELETE FROM shares WHERE "postId"=$1`, [postId]);
+}
+
 const sharesRepository = {
   postShare,
   getSharesByPostId,
+  deleteSharesPost,
 };
 
 export default sharesRepository;

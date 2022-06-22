@@ -4,6 +4,8 @@ import userRepository from "./../repositories/usersRepository.js";
 import postRepository from "./../repositories/postRepository.js";
 import hashtagRepository from "./../repositories/hashtagRepository.js";
 import likeRepository from "./../repositories/likeRepository.js";
+import sharesRepository from "./../repositories/sharesRepository.js";
+import commentRepository from "./../repositories/commentRepository.js";
 
 export async function createPost(req, res) {
   const { user } = JSON.parse(JSON.stringify(res.locals));
@@ -37,7 +39,7 @@ export async function getTimeline(req, res) {
 
   try {
     const { rows } = await postRepository.getPosts(limit);
-    
+
     await Promise.all(
       rows.map(async (post) => {
         const { title, image, description } = await urlMetadata(post.url);
@@ -46,9 +48,8 @@ export async function getTimeline(req, res) {
         post.urlDescription = description;
       })
     );
-      
-    res.status(200).send(rows);
 
+    res.status(200).send(rows);
   } catch (error) {
     res.status(500).send(error);
   }
@@ -131,6 +132,8 @@ export async function deletePost(req, res) {
 
     await hashtagRepository.deletePostHashTags(postId);
     await likeRepository.deleteLikesForDeletePost(postId);
+    await commentRepository.deleteCommentPost(postId);
+    await sharesRepository.deleteSharesPost(postId);
 
     await postRepository.deletePost(postId);
 
