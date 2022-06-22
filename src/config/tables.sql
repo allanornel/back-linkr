@@ -40,9 +40,23 @@ CREATE TABLE "likes" (
 );
 
 
-
 CREATE TABLE "followers" (
 	"id" serial NOT NULL PRIMARY KEY,
-	"userId" int NOT NULL REFERENCES users(id),
+	"followingId" int NOT NULL REFERENCES users(id),
 	"followerId" int NOT NULL REFERENCES users(id)
+);
+
+CREATE TABLE "shares"(
+	"id" serial NOT NULL PRIMARY KEY,
+	"postId" int NOT NULL REFERENCES posts(id),
+	"userId" int NOT NULL REFERENCES users(id),
+	"createdAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE "comments"(
+	"id" serial NOT NULL PRIMARY KEY,
+	"postId" int NOT NULL REFERENCES posts(id),
+	"userId" int NOT NULL REFERENCES users(id),
+	"comment" text NOT NULL,
+	"createdAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

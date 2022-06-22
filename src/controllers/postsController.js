@@ -33,24 +33,24 @@ export async function createPost(req, res) {
 
 export async function getTimeline(req, res) {
   //const { user } = JSON.parse(JSON.stringify(res.locals));
-  const { offset } = req.body;
+  const { limit } = req.body;
 
   try {
-    const { rows } = await postRepository.getPosts(offset);
-
+    const { rows } = await postRepository.getPosts(limit);
+    
     await Promise.all(
       rows.map(async (post) => {
         const { title, image, description } = await urlMetadata(post.url);
-
         post.title = title;
         post.postImage = image;
         post.urlDescription = description;
       })
     );
-
+      
     res.status(200).send(rows);
+
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).send(error);
   }
 }
 
@@ -81,7 +81,8 @@ export async function getUserPosts(req, res) {
 
     res.status(200).send(rows);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.log(error);
+    res.status(500).send(error);
   }
 }
 
@@ -101,13 +102,15 @@ export async function editPost(req, res) {
     await hashtagRepository.deletePostHashTags(postId);
 
     const hashtags = description.match(/(\s|^)\#\w\w+\b/gm);
-    await Promise.all(
-      hashtags.map(async (hashtag) => {
-        const checkHashtag = await hashtagRepository.checkHashtagByName(hashtag.replace(/#/, "").trim());
-        if (checkHashtag.rowCount === 0) await hashtagRepository.insertHashtag([hashtag], postId);
-        else await hashtagRepository.insertHashtagExists(checkHashtag.rows[0].id, postId);
-      })
-    );
+    if (hashtags) {
+      await Promise.all(
+        hashtags.map(async (hashtag) => {
+          const checkHashtag = await hashtagRepository.checkHashtagByName(hashtag.replace(/#/, "").trim());
+          if (checkHashtag.rowCount === 0) await hashtagRepository.insertHashtag([hashtag], postId);
+          else await hashtagRepository.insertHashtagExists(checkHashtag.rows[0].id, postId);
+        })
+      );
+    }
     res.sendStatus(200);
   } catch (error) {
     console.log(error);
