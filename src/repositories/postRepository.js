@@ -20,19 +20,48 @@ async function getTotalPosts() {
 async function getPosts(limit, userId) {
   return db.query(
     `
-    SELECT p."id", p."url", u."id" as "idUser", p."description", 
-    u."username", u."picture" AS "image",
-    COALESCE(COUNT(c."id"), 0) AS "commentsTotal",
-    (SELECT COALESCE(COUNT(p."id"), 0) 
-    FROM posts p) AS "numberOfPosts"
+    (SELECT p."id", p."url", u."id" as "idUser", p."description", 
+    u."username", u."picture" AS "image", p."createdAt", 
+    false as repost, null AS "shareUserId",
+	COALESCE("countLikes".count, 0) AS "likesTotal",
+	COALESCE("countShares".count, 0) AS "countsTotal",
+    COALESCE(COUNT(c."postId"), 0) AS "commentsTotal"  
     FROM posts p
     JOIN users u ON u."id" = p."userId"
-    LEFT JOIN followers f ON f."followerId" = p."userId"
-    LEFT JOIN comments c ON c."postId" = p."id"
-    WHERE f."followingId" = $1  OR f."followerId" = $1
-    OR p."userId" = $1
-    GROUP BY p."id", u.id, "numberOfPosts"
-    ORDER BY p."createdAt" DESC
+    LEFT JOIN followers f ON f."followingId" = p."userId"
+	LEFT JOIN (SELECT "postId", COUNT("postId") 
+		FROM likes 
+		WHERE likes."userId" = $1 
+		GROUP BY "postId", likes.id) AS "countLikes" ON "countLikes"."postId" = p.id
+	LEFT JOIN (SELECT "postId", COUNT("postId") 
+		FROM shares WHERE shares."userId" = $1 
+		GROUP BY "postId", shares.id) AS "countShares" ON "countShares"."postId" = p.id
+    LEFT JOIN comments c ON c."userId" = u."id"
+    WHERE f."followerId" = $1 OR p."userId" = $1
+    GROUP BY p."id", u.id, "countLikes".count, "countShares".count
+  )
+UNION ALL 
+(SELECT p."id", p."url", u."id" as "idUser", p."description", 
+    u."username", u."picture" AS "image", s."createdAt", 
+    true as repost, s."userId" AS "shareUserId",
+	COALESCE("countLikes".count, 0) AS "likesTotal",
+	COALESCE("countShares".count, 0) AS "countsTotal",
+    COALESCE(COUNT(c."postId"), 0) AS "commentsTotal" 
+    FROM posts p
+    JOIN users u ON u."id" = p."userId"
+    JOIN shares s ON s."postId" = p."id"
+    LEFT JOIN followers f ON f."followingId" = p."userId"
+	LEFT JOIN (SELECT "postId", COUNT("postId") 
+		FROM likes WHERE likes."userId" = $1 
+		GROUP BY "postId", likes.id) AS "countLikes" ON "countLikes"."postId" = p.id
+	LEFT JOIN (SELECT "postId", COUNT("postId") 
+		FROM shares WHERE shares."userId" = $1 
+		GROUP BY "postId", shares.id) AS "countShares" ON "countShares"."postId" = p.id
+    LEFT JOIN comments c ON c."userId" = u."id"
+    WHERE f."followerId" = $1 OR s."userId" = $1
+    GROUP BY p."id", u.id, s."createdAt", s."userId", "countLikes".count, "countShares".count
+)
+    ORDER BY "createdAt" DESC
     LIMIT $2;
     `,
     [userId, limit]
@@ -42,20 +71,47 @@ async function getPosts(limit, userId) {
 async function getPostsFromUser(limit, id) {
   return db.query(
     `
-      SELECT p."id", p."url", u."id" as "idUser", p."description", 
-      h."name" AS "hashtag",
-      u."username", u."picture" AS "image",
-      COALESCE(COUNT(c."id"), 0) AS "commentsTotal"  
-      FROM posts p
-      JOIN users u ON u."id" = p."userId"
-      LEFT JOIN comments c ON c."postId" = p."id"
-      LEFT JOIN "postsHashtags" ph ON ph."idPost" = p."id"
-      LEFT JOIN hashtags h ON h."id" = ph."id"
-      WHERE p."userId" = $1
-      GROUP BY p."id", p."url", p."description", h."name",
-      u."username", u."picture", u."id"
-      ORDER BY p."createdAt" DESC
-      LIMIT $2;
+    (SELECT p."id", p."url", u."id" as "idUser", p."description", 
+    u."username", u."picture" AS "image", p."createdAt", 
+    false as repost, null AS "shareUserId",
+	COALESCE("countLikes".count, 0) AS "likesTotal",
+	COALESCE("countShares".count, 0) AS "countsTotal",
+    COALESCE(COUNT(c."postId"), 0) AS "commentsTotal"  
+    FROM posts p
+    JOIN users u ON u."id" = p."userId"
+	LEFT JOIN (SELECT "postId", COUNT("postId") 
+		FROM likes 
+		WHERE likes."userId" = $1 
+		GROUP BY "postId", likes.id) AS "countLikes" ON "countLikes"."postId" = p.id
+	LEFT JOIN (SELECT "postId", COUNT("postId") 
+		FROM shares WHERE shares."userId" = $1 
+		GROUP BY "postId", shares.id) AS "countShares" ON "countShares"."postId" = p.id
+    LEFT JOIN comments c ON c."userId" = u."id"
+    WHERE p."userId" = $1
+    GROUP BY p."id", u.id, "countLikes".count, "countShares".count
+  )
+UNION ALL 
+(SELECT p."id", p."url", u."id" as "idUser", p."description", 
+    u."username", u."picture" AS "image", s."createdAt", 
+    true as repost, s."userId" AS "shareUserId",
+	COALESCE("countLikes".count, 0) AS "likesTotal",
+	COALESCE("countShares".count, 0) AS "countsTotal",
+    COALESCE(COUNT(c."postId"), 0) AS "commentsTotal" 
+    FROM posts p
+    JOIN users u ON u."id" = p."userId"
+    JOIN shares s ON s."postId" = p."id"
+	LEFT JOIN (SELECT "postId", COUNT("postId") 
+		FROM likes WHERE likes."userId" = $1 
+		GROUP BY "postId", likes.id) AS "countLikes" ON "countLikes"."postId" = p.id
+	LEFT JOIN (SELECT "postId", COUNT("postId") 
+		FROM shares WHERE shares."userId" = $1 
+		GROUP BY "postId", shares.id) AS "countShares" ON "countShares"."postId" = p.id
+    LEFT JOIN comments c ON c."userId" = u."id"
+    WHERE s."userId" = $1
+    GROUP BY p."id", u.id, s."createdAt", s."userId", "countLikes".count, "countShares".count
+)
+    ORDER BY "createdAt" DESC
+    LIMIT $2;
             `,
     [id, limit]
   );
