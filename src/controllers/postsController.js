@@ -67,9 +67,10 @@ export async function getNumberOfPosts(req, res) {
 
 export async function getUserPosts(req, res) {
   const { id } = req.params;
+  const { limit } = req.body;
 
   try {
-    const userExist = await userRepository.searchUser(id);
+    const userExist = await userRepository.searchUser(limit, id);
     if ( userExist.rowCount === 0 ) return res.sendStatus(404);
 
     const { rows } = await postRepository.getPostsFromUser(id);

@@ -22,14 +22,16 @@ async function getPosts(limit, userId) {
     `
     SELECT p."id", p."url", u."id" as "idUser", p."description", 
     u."username", u."picture" AS "image",
-    COALESCE(COUNT(c."id"), 0) AS "commentsTotal"  
+    COALESCE(COUNT(c."id"), 0) AS "commentsTotal",
+    (SELECT COALESCE(COUNT(p."id"), 0) 
+    FROM posts p) AS "numberOfPosts"
     FROM posts p
     JOIN users u ON u."id" = p."userId"
     LEFT JOIN followers f ON f."followerId" = p."userId"
     LEFT JOIN comments c ON c."postId" = p."id"
     WHERE f."followingId" = $1  OR f."followerId" = $1
     OR p."userId" = $1
-    GROUP BY p."id", u.id
+    GROUP BY p."id", u.id, "numberOfPosts"
     ORDER BY p."createdAt" DESC
     LIMIT $2;
     `,
@@ -37,7 +39,7 @@ async function getPosts(limit, userId) {
   );
 }
 
-async function getPostsFromUser(id) {
+async function getPostsFromUser(limit, id) {
   return db.query(
     `
       SELECT p."id", p."url", u."id" as "idUser", p."description", 
@@ -53,9 +55,9 @@ async function getPostsFromUser(id) {
       GROUP BY p."id", p."url", p."description", h."name",
       u."username", u."picture", u."id"
       ORDER BY p."createdAt" DESC
-      LIMIT 20;
+      LIMIT $2;
             `,
-    [id]
+    [id, limit]
   );
 }
 
