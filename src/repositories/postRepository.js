@@ -68,7 +68,7 @@ UNION ALL
   );
 }
 
-async function getPostsFromUser(id) {
+async function getPostsFromUser(limit, id) {
   return db.query(
     `
     (SELECT p."id", p."url", u."id" as "idUser", p."description", 
@@ -111,9 +111,9 @@ UNION ALL
     GROUP BY p."id", u.id, s."createdAt", s."userId", "countLikes".count, "countShares".count
 )
     ORDER BY "createdAt" DESC
-    LIMIT 20;
+    LIMIT $2;
             `,
-    [id]
+    [id, limit]
   );
 }
 

@@ -14,8 +14,10 @@ export async function getTopHashtags(req, res) {
 
 export async function getHashtagByName(req, res) {
   const { hashtag } = req.params;
+  const { limit } = req.body;
+
   try {
-    const checkHashtag = await hashtagRepository.checkHashtagByName(hashtag);
+    const checkHashtag = await hashtagRepository.checkHashtagByName(hashtag, limit);
     if (checkHashtag.rowCount === 0) return res.sendStatus(404);
     const posts = await hashtagRepository.getHashtagByName(hashtag);
     await Promise.all(
