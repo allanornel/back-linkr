@@ -50,7 +50,7 @@ export async function getTimeline(req, res) {
       })
     );
 
-    res.status(200).send(rows);
+    res.status(200).send({ userId: id, rows });
   } catch (error) {
     res.status(500).send(error);
   }
@@ -70,7 +70,7 @@ export async function getUserPosts(req, res) {
 
   try {
     const userExist = await userRepository.searchUser(id);
-    if ( userExist.rowCount === 0 ) return res.sendStatus(404);
+    if (userExist.rowCount === 0) return res.sendStatus(404);
 
     const { rows } = await postRepository.getPostsFromUser(id);
 
@@ -84,7 +84,7 @@ export async function getUserPosts(req, res) {
       })
     );
 
-    res.status(200).send({name:userExist.rows[0].username, posts:rows});
+    res.status(200).send({ name: userExist.rows[0].username, posts: rows });
   } catch (error) {
     console.log(error);
     res.status(500).send(error);
