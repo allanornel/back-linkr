@@ -26,10 +26,15 @@ async function deleteCommentPost(postId) {
   return db.query(`DELETE FROM comments WHERE "postId" = $1`, [postId]);
 }
 
+async function countComments(postId) {
+  return db.query(`SELECT count(*) FROM comments WHERE "postId" = $1`, [postId]);
+}
+
 const commentRepository = {
   createComment,
   searchComments,
   deleteCommentPost,
+  countComments,
 };
 
 export default commentRepository;
