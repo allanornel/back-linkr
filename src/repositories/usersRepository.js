@@ -30,7 +30,7 @@ async function getUsers(userId) {
   return db.query(
     `
     SELECT u.*, 
-    CASE WHEN f."followerId" = 18 THEN true ELSE false END AS following
+    CASE WHEN f."followerId" = $1 THEN true ELSE false END AS following
     FROM users u
     LEFT JOIN followers f ON u.id = f."followingId";
   `,
