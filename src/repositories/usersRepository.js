@@ -29,10 +29,10 @@ async function findByUser(email) {
 async function getUsers(userId) {
   return db.query(
     `
-    SELECT u.*, 
+    SELECT DISTINCT u.*,
     CASE WHEN f."followerId" = $1 THEN true ELSE false END AS following
     FROM users u
-    LEFT JOIN followers f ON u.id = f."followingId";
+    LEFT JOIN followers f ON u.id = f."followingId"
   `,
     [userId]
   );
