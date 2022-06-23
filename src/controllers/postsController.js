@@ -50,7 +50,7 @@ export async function getTimeline(req, res) {
       })
     );
 
-    res.status(200).send(rows);
+    res.status(200).send({ userId: id, rows });
   } catch (error) {
     res.status(500).send(error);
   }
