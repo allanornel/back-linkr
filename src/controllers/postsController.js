@@ -68,6 +68,8 @@ export async function getNumberOfPosts(req, res) {
 export async function getUserPosts(req, res) {
   const { id } = req.params;
   const { limit } = req.body;
+  const { user } = JSON.parse(JSON.stringify(res.locals));
+
   try {
     const userExist = await userRepository.searchUser(id);
     if (userExist.rowCount === 0) return res.sendStatus(404);
@@ -84,7 +86,7 @@ export async function getUserPosts(req, res) {
       })
     );
 
-    res.status(200).send({ name: userExist.rows[0].username, posts: rows });
+    res.status(200).send({ userId: user.id, name: userExist.rows[0].username, posts: rows });
   } catch (error) {
     console.log(error);
     res.status(500).send(error);
