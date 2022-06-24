@@ -86,7 +86,12 @@ export async function getUserPosts(req, res) {
       })
     );
 
-    res.status(200).send({ userId: user.id, name: userExist.rows[0].username, posts: rows });
+    res.status(200).send({ 
+      userId: user.id, 
+      picture: userExist.rows[0].picture, 
+      name: userExist.rows[0].username, 
+      posts: rows 
+    });
   } catch (error) {
     console.log(error);
     res.status(500).send(error);
