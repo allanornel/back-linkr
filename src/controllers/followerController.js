@@ -38,3 +38,23 @@ export async function FollowMe(req, res) {
   res.status(200).json({ iFollow  })
 
 }
+
+export async function UserFollowsSomeone(req, res) {
+  const { id } = req.query
+
+  if(!id) {
+    return res.sendStatus(400)
+  }
+
+
+  const userFollower = await followersRepository.userFollowsSomeone(id)
+
+
+  if(userFollower.rows[0].total === '0') {
+    return res.status(200).json({ follow: false })
+  }
+
+  return res.status(200).json({ follow: true })
+  
+
+}
