@@ -14,20 +14,6 @@ async function getSharesByPostId(postId) {
   );
 }
 
-// TODO
-// ESTUDAR ESSA QUERY PARA SABER PORQUE COUNT TÁ BUGANDO
-// SELECT p."id", p."url", u."id" as "idUser", p."description",
-//            u."username", u."picture" AS "image",
-//             COUNT(l.id) AS "likesTotal"
-//             COUNT(s."postId") AS "sharesTotal"
-//             FROM posts p
-//             JOIN users u ON u.id= p."userId"
-//             LEFT JOIN shares s ON p.id = s."postId"
-//             LEFT JOIN likes l ON p.id = l."postId"
-//             GROUP BY p.id, u.id
-//             ORDER BY p."createdAt" DESC
-//             LIMIT 20;
-
 async function deleteSharesPost(postId) {
   return db.query(`DELETE FROM shares WHERE "postId"=$1`, [postId]);
 }
