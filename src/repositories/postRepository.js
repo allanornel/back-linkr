@@ -37,7 +37,7 @@ async function getPosts(limit, userId) {
 		FROM shares WHERE shares."userId" = $1 
 		GROUP BY "postId", shares.id) AS "countShares" ON "countShares"."postId" = p.id
     LEFT JOIN comments c ON c."userId" = u."id"
-    WHERE f."followerId" = $1 OR p."userId" = $1
+    WHERE f."followerId" = $1
     GROUP BY p."id", u.id, "countLikes".count, "countShares".count
   )
 UNION ALL 
