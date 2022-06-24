@@ -166,3 +166,4 @@ export async function getUsers(req, res) {
     res.sendStatus(500);
   }
 }
+
