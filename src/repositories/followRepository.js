@@ -16,11 +16,16 @@ async function searchFollowing(followerId) {
   return db.query(`SELECT "followingId" FROM followers WHERE "followerId"=$1;`, [followerId])
 }
 
+async function userFollowsSomeone(idUser) {
+  return db.query(`select count("followerId") as total from users as u inner join followers folow on folow."followerId" = u.id where u.id = $1`, [idUser])
+}
+
 const followersRepository = {
   searchFollow,
   follow,
   notFollower,
-  searchFollowing
+  searchFollowing,
+  userFollowsSomeone
 }
 
 export default followersRepository
