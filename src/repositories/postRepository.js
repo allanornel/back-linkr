@@ -59,7 +59,7 @@ UNION ALL
 		FROM shares WHERE shares."userId" = $1
 		GROUP BY "postId", shares.id) AS "countShares" ON "countShares"."postId" = p.id
     LEFT JOIN comments c ON c."userId" = u."id"
-    WHERE f."followerId" = $1
+    WHERE f."followerId" = $1 AND NOT s."userId" = $1 
     GROUP BY p."id", u.id, s."createdAt", s."userId", "countLikes".count, "countShares".count, u2.username
 )
     ORDER BY "createdAt" DESC
