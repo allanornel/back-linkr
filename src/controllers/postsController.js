@@ -91,7 +91,7 @@ export async function getUserPosts(req, res) {
       userId: user.id,
       picture: userExist.rows[0].picture,
       name: userExist.rows[0].username,
-      posts: rows,
+      posts: rows
     });
   } catch (error) {
     console.log(error);
