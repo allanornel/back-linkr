@@ -30,9 +30,12 @@ async function getUsers(userId) {
   return db.query(
     `
     SELECT DISTINCT u.*,
-    CASE WHEN f."followerId" = $1 THEN true ELSE false END AS following
+	  CASE WHEN u.id = list."followingId" THEN true ELSE FALSE END AS following	
     FROM users u
-    LEFT JOIN followers f ON u.id = f."followingId"
+	  LEFT JOIN followers f ON u.id = f."followingId"
+	  LEFT JOIN (SELECT "followingId" 
+    FROM followers  
+    WHERE "followerId" = $1) AS list ON list."followingId" = f."followingId"
   `,
     [userId]
   );
